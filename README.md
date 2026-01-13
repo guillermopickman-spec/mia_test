@@ -53,20 +53,23 @@ npm start
 
 This project is configured for deployment on Vercel. The frontend folder contains the Next.js application.
 
-### Vercel Configuration
+### Quick Vercel Setup
 
-When deploying to Vercel:
+1. **Go to [vercel.com](https://vercel.com)** and sign in with GitHub
+2. **Click "Add New Project"** and import `guillermopickman-spec/mia_test`
+3. **⚠️ IMPORTANT: Set Root Directory to `frontend`**
+4. **Click "Deploy"** - Vercel will auto-detect Next.js
 
-1. **Import the repository** from GitHub: `https://github.com/guillermopickman-spec/mia_test.git`
+**For detailed step-by-step instructions, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)**
 
-2. **Configure project settings**:
-   - Framework Preset: **Next.js**
-   - Root Directory: **`frontend`** (important!)
-   - Build Command: `npm install && npm run build` (or leave default)
-   - Output Directory: `.next` (or leave default)
-   - Install Command: `npm install` (or leave default)
+### Key Settings
 
-3. **Deploy**: Vercel will automatically detect Next.js and deploy
+| Setting | Value |
+|---------|-------|
+| Framework | Next.js |
+| **Root Directory** | **`frontend`** ⚠️ |
+| Build Command | `npm run build` |
+| Output Directory | `.next` (auto) |
 
 The `vercel.json` in the frontend folder is already configured for Next.js 15.
 
