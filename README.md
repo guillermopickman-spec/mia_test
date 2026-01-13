@@ -86,15 +86,33 @@ frontend/
 └── public/          # Static assets
 ```
 
-## Phase 0 Status
+## Phase Status
 
-This phase includes:
-- ✅ Frontend UI with navigation
-- ✅ Mock data for demonstration
-- ✅ Responsive design
-- ✅ Ready for Vercel deployment
+### Phase 0: ✅ COMPLETED
+- Frontend UI with navigation
+- Mock data for demonstration
+- Responsive design
+- Ready for Vercel deployment
 
-Backend integration will be added in future phases.
+### Phase 2: ✅ COMPLETED
+- Mock API service layer (`lib/mockApi.ts`)
+- React hooks for data fetching (`lib/queries.ts`)
+- Loading states and error handling
+- Dashboard and Reports pages using hooks
+- Error boundary components
+- SSR-safe implementation
+
+## Environment Variables
+
+For Vercel deployment, set the following environment variable:
+
+- `NEXT_PUBLIC_USE_MOCK_API=true` - Enables mock API mode (default: true)
+
+When ready to connect to real backend:
+- `NEXT_PUBLIC_USE_MOCK_API=false`
+- `NEXT_PUBLIC_API_URL=https://your-backend-url.com`
+
+Backend integration will be added in Phase 3.
 
 ## License
 
