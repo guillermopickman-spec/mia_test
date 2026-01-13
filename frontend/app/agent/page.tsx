@@ -3,11 +3,18 @@
 import { Bot, Send, Loader2 } from "lucide-react";
 import { useState } from "react";
 
+type Message = {
+  id: number;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+};
+
 export default function AgentPage() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      role: "assistant" as const,
+      role: "assistant",
       content: "Hello! I'm your Market Intelligence Agent. I can help you analyze markets, generate reports, and gather competitive intelligence. What would you like to know?",
       timestamp: new Date().toISOString(),
     },
@@ -18,9 +25,9 @@ export default function AgentPage() {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMessage = {
+    const userMessage: Message = {
       id: messages.length + 1,
-      role: "user" as const,
+      role: "user",
       content: input,
       timestamp: new Date().toISOString(),
     };
@@ -31,9 +38,9 @@ export default function AgentPage() {
 
     // Simulate API response
     setTimeout(() => {
-      const assistantMessage = {
+      const assistantMessage: Message = {
         id: messages.length + 2,
-        role: "assistant" as const,
+        role: "assistant",
         content: `I understand you're asking about "${input}". In a production environment, I would connect to the backend API to process your request and provide real-time market intelligence. For now, this is a mock response demonstrating the interface.`,
         timestamp: new Date().toISOString(),
       };
