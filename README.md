@@ -109,16 +109,25 @@ frontend/
 - Dashboard connected to real backend
 - Reports and Agent Terminal remain on mock mode
 
+### Phase 4: ✅ COMPLETED
+- Reports endpoint integration with real backend
+- Reports transformer to map backend format to frontend types
+- Reports page displays real mission logs from database
+- Title extraction from response content
+- Status mapping (COMPLETED → completed, etc.)
+- Size calculation from response length
+- Agent Terminal remains on mock mode (Phase 5+)
+
 ## Environment Variables
 
 ### For Phase 2 (Mock Mode):
 - `NEXT_PUBLIC_USE_MOCK_API=true` - Enables mock API mode
 
 ### For Phase 3+ (Real Backend):
-- `NEXT_PUBLIC_USE_MOCK_API=false` - Disables mock mode for health/stats
+- `NEXT_PUBLIC_USE_MOCK_API=false` - Disables mock mode for health/stats/reports
 - `NEXT_PUBLIC_API_URL=https://your-backend-url.com` - Your backend API URL
 
-**Note**: Reports and Agent Terminal still use mock mode in Phase 3. They will be connected in Phase 4+.
+**Note**: Agent Terminal still uses mock mode in Phase 4. It will be connected in Phase 5+.
 
 ### Vercel Configuration:
 1. Go to Project Settings → Environment Variables

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { mockApi, type HealthStatus, type MissionStats, type Report, type Activity } from "./mockApi";
 import { api } from "./api";
-import { transformHealthResponse, transformStatsResponse } from "./apiTransformers";
+import { transformHealthResponse, transformStatsResponse, transformReportsResponse } from "./apiTransformers";
 
 // Check if we should use mock API (works on both server and client)
 const useMockApi = () => {
@@ -121,8 +121,17 @@ export function useReports() {
           const reports = await mockApi.getReports();
           setData(reports);
         } else {
-          // Real API call would go here
-          throw new Error("Real API not yet implemented");
+          // Real API call with transformation
+          const backendReports = await api.get<Array<{
+            id: number;
+            conversation_id: number;
+            query: string;
+            response: string;
+            status: string;
+            created_at: string;
+          }>>("/reports");
+          const transformed = transformReportsResponse(backendReports);
+          setData(transformed);
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));
@@ -143,6 +152,18 @@ export function useReports() {
         if (useMockApi()) {
           const reports = await mockApi.getReports();
           setData(reports);
+        } else {
+          // Real API call with transformation
+          const backendReports = await api.get<Array<{
+            id: number;
+            conversation_id: number;
+            query: string;
+            response: string;
+            status: string;
+            created_at: string;
+          }>>("/reports");
+          const transformed = transformReportsResponse(backendReports);
+          setData(transformed);
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));
