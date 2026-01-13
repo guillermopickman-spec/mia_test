@@ -1,34 +1,45 @@
-import { Activity, Bot, FileText, TrendingUp } from "lucide-react";
+"use client";
+
+import { Activity, Bot, FileText, TrendingUp, Loader2 } from "lucide-react";
+import { useHealthCheck, useMissionStats, useActivity } from "@/lib/queries";
 
 export default function Home() {
-  const stats = [
+  const { data: health, isLoading: healthLoading } = useHealthCheck();
+  const { data: stats, isLoading: statsLoading } = useMissionStats();
+  const { data: activity, isLoading: activityLoading } = useActivity();
+
+  const statCards = [
     {
       title: "Active Missions",
-      value: "12",
+      value: stats?.in_progress?.toString() || "0",
       description: "Currently running",
       icon: Bot,
       color: "text-blue-500",
+      loading: statsLoading,
     },
     {
       title: "Reports Generated",
-      value: "48",
-      description: "This month",
+      value: stats?.total?.toString() || "0",
+      description: "Total missions",
       icon: FileText,
       color: "text-green-500",
+      loading: statsLoading,
     },
     {
       title: "Success Rate",
-      value: "94%",
+      value: stats ? `${stats.success_rate.toFixed(1)}%` : "0%",
       description: "Mission completion",
       icon: TrendingUp,
       color: "text-purple-500",
+      loading: statsLoading,
     },
     {
       title: "System Health",
-      value: "Healthy",
-      description: "All systems operational",
+      value: health?.status === "healthy" ? "Healthy" : health?.status || "Unknown",
+      description: health ? `${health.database}, ${health.chromadb}` : "Checking...",
       icon: Activity,
-      color: "text-emerald-500",
+      color: health?.status === "healthy" ? "text-emerald-500" : "text-yellow-500",
+      loading: healthLoading,
     },
   ];
 
@@ -45,7 +56,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat) => {
+          {statCards.map((stat) => {
             const Icon = stat.icon;
             return (
               <div
@@ -54,10 +65,13 @@ export default function Home() {
               >
                 <div className="flex items-center justify-between">
                   <Icon className={`h-8 w-8 ${stat.color}`} />
+                  {stat.loading && (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
                 </div>
                 <div>
                   <p className="text-3xl font-bold text-foreground">
-                    {stat.value}
+                    {stat.loading ? "..." : stat.value}
                   </p>
                   <p className="text-sm font-medium text-foreground">
                     {stat.title}
@@ -75,47 +89,68 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-foreground mb-4">
             Recent Activity
           </h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-border">
-              <div>
-                <p className="text-foreground font-medium">
-                  Market analysis completed for TechCorp
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  2 hours ago
-                </p>
-              </div>
-              <span className="px-3 py-1 bg-green-500/20 text-green-500 rounded-full text-xs font-medium">
-                Completed
-              </span>
+          {activityLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-            <div className="flex items-center justify-between py-3 border-b border-border">
-              <div>
-                <p className="text-foreground font-medium">
-                  Competitive intelligence report generated
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  5 hours ago
-                </p>
-              </div>
-              <span className="px-3 py-1 bg-blue-500/20 text-blue-500 rounded-full text-xs font-medium">
-                Active
-              </span>
+          ) : activity && activity.length > 0 ? (
+            <div className="space-y-4">
+              {activity.map((item) => {
+                const getStatusColor = (status: string) => {
+                  switch (status) {
+                    case "completed":
+                      return "bg-green-500/20 text-green-500";
+                    case "active":
+                      return "bg-blue-500/20 text-blue-500";
+                    case "processing":
+                      return "bg-yellow-500/20 text-yellow-500";
+                    case "failed":
+                      return "bg-red-500/20 text-red-500";
+                    default:
+                      return "bg-muted text-muted-foreground";
+                  }
+                };
+
+                const formatTimeAgo = (timestamp: string) => {
+                  const date = new Date(timestamp);
+                  const now = new Date();
+                  const diffMs = now.getTime() - date.getTime();
+                  const diffMins = Math.floor(diffMs / 60000);
+                  const diffHours = Math.floor(diffMs / 3600000);
+                  const diffDays = Math.floor(diffMs / 86400000);
+
+                  if (diffMins < 60) return `${diffMins} minutes ago`;
+                  if (diffHours < 24) return `${diffHours} hours ago`;
+                  return `${diffDays} days ago`;
+                };
+
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between py-3 border-b border-border last:border-b-0"
+                  >
+                    <div>
+                      <p className="text-foreground font-medium">{item.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formatTimeAgo(item.timestamp)}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        item.status
+                      )}`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <p className="text-foreground font-medium">
-                  Industry trend analysis in progress
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  1 day ago
-                </p>
-              </div>
-              <span className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-full text-xs font-medium">
-                Processing
-              </span>
+          ) : (
+            <div className="text-center text-muted-foreground py-8">
+              No recent activity
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
