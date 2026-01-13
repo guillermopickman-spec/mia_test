@@ -102,17 +102,28 @@ frontend/
 - Error boundary components
 - SSR-safe implementation
 
+### Phase 3: ✅ COMPLETED
+- Real API integration for health and stats endpoints
+- API response transformers (`lib/apiTransformers.ts`)
+- Enhanced API utility with timeout and error handling
+- Dashboard connected to real backend
+- Reports and Agent Terminal remain on mock mode
+
 ## Environment Variables
 
-For Vercel deployment, set the following environment variable:
+### For Phase 2 (Mock Mode):
+- `NEXT_PUBLIC_USE_MOCK_API=true` - Enables mock API mode
 
-- `NEXT_PUBLIC_USE_MOCK_API=true` - Enables mock API mode (default: true)
+### For Phase 3+ (Real Backend):
+- `NEXT_PUBLIC_USE_MOCK_API=false` - Disables mock mode for health/stats
+- `NEXT_PUBLIC_API_URL=https://your-backend-url.com` - Your backend API URL
 
-When ready to connect to real backend:
-- `NEXT_PUBLIC_USE_MOCK_API=false`
-- `NEXT_PUBLIC_API_URL=https://your-backend-url.com`
+**Note**: Reports and Agent Terminal still use mock mode in Phase 3. They will be connected in Phase 4+.
 
-Backend integration will be added in Phase 3.
+### Vercel Configuration:
+1. Go to Project Settings → Environment Variables
+2. Add `NEXT_PUBLIC_API_URL` with your backend URL (e.g., `https://market-intel-agent.onrender.com`)
+3. Set `NEXT_PUBLIC_USE_MOCK_API=false` to enable real API for Dashboard
 
 ## License
 

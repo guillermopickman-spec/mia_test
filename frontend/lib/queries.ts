@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { mockApi, type HealthStatus, type MissionStats, type Report, type Activity } from "./mockApi";
+import { api } from "./api";
+import { transformHealthResponse, transformStatsResponse } from "./apiTransformers";
 
 // Check if we should use mock API (works on both server and client)
 const useMockApi = () => {
@@ -28,10 +30,15 @@ export function useHealthCheck() {
           const health = await mockApi.getHealth();
           setData(health);
         } else {
-          // Real API call would go here
-          // const health = await api.get<HealthStatus>('/health');
-          // setData(health);
-          throw new Error("Real API not yet implemented");
+          // Real API call with transformation
+          const backendResponse = await api.get<{
+            status: "ok" | "degraded";
+            database: string;
+            chromadb: string;
+            server_time: string;
+          }>("/health");
+          const transformed = transformHealthResponse(backendResponse);
+          setData(transformed);
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));
@@ -69,8 +76,14 @@ export function useMissionStats() {
           const stats = await mockApi.getStats();
           setData(stats);
         } else {
-          // Real API call would go here
-          throw new Error("Real API not yet implemented");
+          // Real API call with transformation
+          const backendResponse = await api.get<{
+            total_missions: number;
+            completed_missions: number;
+            failed_missions: number;
+          }>("/stats");
+          const transformed = transformStatsResponse(backendResponse);
+          setData(transformed);
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Unknown error"));

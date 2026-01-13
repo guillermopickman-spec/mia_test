@@ -1,6 +1,6 @@
 # Vercel Deployment Guide
 
-Complete step-by-step guide to deploy Market Intelligence Agent Phase 0 to Vercel.
+Complete step-by-step guide to deploy Market Intelligence Agent to Vercel (Phase 0-3).
 
 ## Prerequisites
 
@@ -96,9 +96,11 @@ Once deployment is complete:
 
 **For Phase 3+ (Backend Integration):**
 1. Update environment variables:
-   - `NEXT_PUBLIC_USE_MOCK_API` = `false` (or remove it)
-   - `NEXT_PUBLIC_API_URL` = `https://your-backend-url.com`
-2. Add any other backend-related variables as needed
+   - `NEXT_PUBLIC_USE_MOCK_API` = `false` (disables mock for health/stats)
+   - `NEXT_PUBLIC_API_URL` = `https://your-backend-url.com` (e.g., `https://market-intel-agent.onrender.com`)
+2. **Important**: Ensure your backend has CORS configured to allow your Vercel domain
+3. Test the connection by checking the Dashboard - it should show real backend data
+4. Reports and Agent Terminal will still use mock mode until Phase 4+
 
 ## Troubleshooting
 
@@ -118,6 +120,24 @@ Once deployment is complete:
 - Check deployment logs in Vercel dashboard
 - Verify the Root Directory is `frontend`
 - Ensure `vercel.json` is in the `frontend` folder
+
+### Phase 3: Backend Connection Issues
+
+**Error: "Cannot connect to backend"**
+- Verify `NEXT_PUBLIC_API_URL` is set correctly in Vercel
+- Check that backend is accessible (try opening URL in browser)
+- Verify CORS is configured on backend to allow Vercel domain
+- Check backend logs for any errors
+
+**Error: "CORS error"**
+- Backend must allow requests from your Vercel domain
+- Add Vercel domain to backend CORS allowed origins
+- Example: `https://your-app.vercel.app`
+
+**Dashboard shows errors but backend is online**
+- Check browser console for specific error messages
+- Verify backend `/health` and `/stats` endpoints are working
+- Test endpoints directly: `{API_URL}/health` and `{API_URL}/stats`
 
 ### Wrong Framework Detected
 

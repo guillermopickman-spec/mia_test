@@ -4,8 +4,8 @@ import { Activity, Bot, FileText, TrendingUp, Loader2 } from "lucide-react";
 import { useHealthCheck, useMissionStats, useActivity } from "@/lib/queries";
 
 export default function Home() {
-  const { data: health, isLoading: healthLoading } = useHealthCheck();
-  const { data: stats, isLoading: statsLoading } = useMissionStats();
+  const { data: health, isLoading: healthLoading, error: healthError } = useHealthCheck();
+  const { data: stats, isLoading: statsLoading, error: statsError } = useMissionStats();
   const { data: activity, isLoading: activityLoading } = useActivity();
 
   const statCards = [
@@ -53,6 +53,15 @@ export default function Home() {
           <p className="text-muted-foreground mt-2">
             Overview of your Market Intelligence Agent
           </p>
+          {(healthError || statsError) && (
+            <div className="mt-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3">
+              <p className="text-sm text-yellow-500">
+                {healthError && `Health check: ${healthError.message}`}
+                {healthError && statsError && " • "}
+                {statsError && `Stats: ${statsError.message}`}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
