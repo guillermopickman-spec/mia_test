@@ -1,0 +1,478 @@
+================================================================================
+MARKET INTELLIGENCE AGENT (MIA) - PHASED IMPLEMENTATION PLAN
+================================================================================
+Purpose: Incremental deployment strategy for Vercel, testing each phase 
+         independently to isolate issues and ensure stability.
+
+================================================================================
+PHASE 0: PREPARATION & CLEAN SLATE
+================================================================================
+Status: [ ] Not Started
+
+Objective: Set up a minimal, working Next.js deployment on Vercel
+
+Tasks:
+  1. Create a minimal Next.js app with basic routing
+  2. Configure vercel.json with minimal settings
+  3. Deploy to Vercel and verify it works
+  4. Document any Vercel-specific issues encountered
+
+Deliverables:
+  - Working Next.js app deployed on Vercel
+  - Basic layout and navigation
+  - No backend dependencies
+
+Verification:
+  - Vercel deployment succeeds
+  - Homepage loads without errors
+  - No console errors in browser
+
+================================================================================
+PHASE 1: STATIC FRONTEND - MOCK DATA IN COMPONENTS
+================================================================================
+Status: [ ] Not Started
+
+Objective: Build UI components with hardcoded mock data, no API calls
+
+Tasks:
+  1. Implement Dashboard page with mock statistics
+     - Hardcoded health status
+     - Mock mission counts (total: 42, completed: 38, failed: 4)
+     - Mock system status (Database: Online, ChromaDB: Online)
+     - Mock recent price data (3-5 items)
+  
+  2. Implement Agent Terminal page with mock UI
+     - Message list component (empty state or mock messages)
+     - Mission input form (non-functional submit)
+     - No streaming or API calls
+  
+  3. Implement Reports page with mock table
+     - Hardcoded table with 5-10 mock report entries
+     - No API calls to backend
+     - Static data only
+
+  4. Ensure all UI components render correctly
+     - Shadcn/UI components working
+     - Tailwind styling applied
+     - Dark theme active
+
+Deliverables:
+  - All three pages render with mock data
+  - No API calls or fetch requests
+  - No backend dependencies
+  - All UI components functional
+
+Verification:
+  - Deploy to Vercel - should succeed
+  - All pages load without errors
+  - Mock data displays correctly
+  - No network requests in DevTools
+
+Environment Variables Needed:
+  - None
+
+Files to Modify:
+  - frontend/app/page.tsx (use mock data)
+  - frontend/app/agent/page.tsx (remove API calls, use mocks)
+  - frontend/app/reports/page.tsx (use mock data)
+  - frontend/lib/queries.ts (comment out or remove)
+
+================================================================================
+PHASE 2: FRONTEND WITH MOCK API - MOCK SERVICE LAYER
+================================================================================
+Status: [ ] Not Started
+
+Objective: Add API structure but return mock data from frontend hooks
+
+Tasks:
+  1. Create mock API service layer
+     - Create frontend/lib/mockApi.ts
+     - Mock all API responses (health, stats, reports, streaming)
+     - Simulate async delays (50-200ms)
+  
+  2. Update queries.ts to use mock API in development
+     - Add environment flag: NEXT_PUBLIC_USE_MOCK_API=true
+     - Conditionally return mock data when flag is set
+     - Keep real API structure intact
+  
+  3. Update Dashboard to use mock queries
+     - Enable useHealthCheck and useMissionStats
+     - Verify loading states work
+     - Verify data displays correctly
+  
+  4. Update Reports page to use mock queries
+     - Enable useReports hook
+     - Verify table populates with mock data
+     - Test loading states
+
+Deliverables:
+  - Frontend uses API hooks but returns mock data
+  - Loading states work correctly
+  - Error states can be tested (add mock error responses)
+  - No backend connection required
+
+Verification:
+  - Deploy to Vercel with NEXT_PUBLIC_USE_MOCK_API=true
+  - All pages load and display mock data
+  - Loading indicators appear briefly
+  - Network tab shows no real API calls
+
+Environment Variables Needed:
+  - NEXT_PUBLIC_USE_MOCK_API=true
+
+Files to Create/Modify:
+  - frontend/lib/mockApi.ts (new)
+  - frontend/lib/queries.ts (add mock mode)
+  - frontend/app/page.tsx (ensure hooks are used)
+  - frontend/app/reports/page.tsx (ensure hooks are used)
+
+================================================================================
+PHASE 3: CONNECT TO BACKEND - HEALTH & STATS ENDPOINTS
+================================================================================
+Status: [ ] Not Started
+
+Objective: Connect frontend to real backend for health and stats only
+
+Tasks:
+  1. Configure API URL
+     - Set NEXT_PUBLIC_API_URL to Render backend URL
+     - Or configure vercel.json rewrites to proxy to backend
+     - Test API URL resolution in production
+  
+  2. Verify backend endpoints are accessible
+     - /health endpoint responds correctly
+     - /stats endpoint responds correctly
+     - CORS configured properly on backend
+  
+  3. Update Dashboard to use real API
+     - Remove mock API flag or set to false
+     - Verify health check works
+     - Verify stats display correctly
+     - Handle error states (backend down, network issues)
+  
+  4. Keep Agent Terminal and Reports as mock for now
+
+Deliverables:
+  - Dashboard shows real backend data
+  - Health check works in real-time
+  - Stats reflect actual database state
+  - Error handling works when backend is unavailable
+
+Verification:
+  - Deploy to Vercel
+  - Dashboard displays real health status
+  - Stats show actual mission counts
+  - Test error handling by temporarily disabling backend
+
+Environment Variables Needed:
+  - NEXT_PUBLIC_API_URL=<your-render-backend-url>
+  - NEXT_PUBLIC_USE_MOCK_API=false (or remove it)
+
+Files to Modify:
+  - frontend/lib/queries.ts (use real API)
+  - frontend/lib/api.ts (verify URL resolution)
+  - Backend: Ensure CORS allows Vercel domain
+
+Backend Requirements:
+  - /health endpoint working
+  - /stats endpoint working
+  - CORS middleware configured
+
+================================================================================
+PHASE 4: REPORTS ENDPOINT INTEGRATION
+================================================================================
+Status: [ ] Not Started
+
+Objective: Connect Reports page to real backend
+
+Tasks:
+  1. Verify backend /reports endpoint
+     - Test endpoint returns correct data structure
+     - Verify authentication/authorization if needed
+     - Check pagination if implemented
+  
+  2. Update Reports page to use real API
+     - Remove mock data
+     - Use real useReports hook
+     - Handle empty state (no reports)
+     - Handle loading state
+     - Handle error state
+  
+  3. Test data display
+     - Verify table renders correctly with real data
+     - Test with various report statuses
+     - Verify date formatting
+     - Test pagination if applicable
+
+Deliverables:
+  - Reports page displays real mission logs
+  - All report data fields display correctly
+  - Loading and error states work
+  - Empty state handles no reports gracefully
+
+Verification:
+  - Deploy to Vercel
+  - Reports page shows real data from database
+  - Test with empty database
+  - Test with various report statuses
+
+Environment Variables Needed:
+  - NEXT_PUBLIC_API_URL=<your-render-backend-url>
+
+Files to Modify:
+  - frontend/app/reports/page.tsx (ensure using real API)
+  - frontend/lib/queries.ts (verify useReports implementation)
+
+Backend Requirements:
+  - /reports endpoint working
+  - Returns proper JSON structure
+  - Handles edge cases (empty results)
+
+================================================================================
+PHASE 5: AGENT TERMINAL - BASIC MISSION EXECUTION (NON-STREAMING)
+================================================================================
+Status: [ ] Not Started
+
+Objective: Implement basic mission execution without streaming
+
+Tasks:
+  1. Create non-streaming mission endpoint test
+     - Test /execute endpoint (non-streaming)
+     - Verify request/response structure
+     - Handle errors appropriately
+  
+  2. Update Agent Terminal for non-streaming
+     - Add mission input form functionality
+     - Call /execute endpoint on submit
+     - Display loading state during execution
+     - Display final result when complete
+     - Handle errors
+  
+  3. Test mission execution
+     - Test with simple queries
+     - Verify responses display correctly
+     - Test error handling (invalid input, backend errors)
+     - Verify mission logs appear in Reports after execution
+
+Deliverables:
+  - Agent Terminal can submit missions
+  - Non-streaming execution works
+  - Results display correctly
+  - Error handling works
+
+Verification:
+  - Deploy to Vercel
+  - Submit a test mission
+  - Verify result displays
+  - Check Reports page for new entry
+
+Environment Variables Needed:
+  - NEXT_PUBLIC_API_URL=<your-render-backend-url>
+
+Files to Modify:
+  - frontend/app/agent/page.tsx (implement non-streaming execution)
+  - frontend/lib/queries.ts (add useMissionExecution hook)
+
+Backend Requirements:
+  - /execute endpoint working
+  - Proper error handling
+  - Response format matches frontend expectations
+
+================================================================================
+PHASE 6: AGENT TERMINAL - STREAMING IMPLEMENTATION
+================================================================================
+Status: [ ] Not Started
+
+Objective: Implement streaming mission execution with real-time updates
+
+Tasks:
+  1. Test streaming endpoint
+     - Verify /execute/stream endpoint works
+     - Test NDJSON format parsing
+     - Verify chunk types (thinking, tool, complete, error)
+     - Test with various mission types
+  
+  2. Implement streaming in frontend
+     - Use existing useStreamingMission hook
+     - Verify chunk parsing works
+     - Display thinking steps in real-time
+     - Display tool execution steps
+     - Display final report when complete
+  
+  3. Test streaming thoroughly
+     - Test with long-running missions
+     - Test error handling during stream
+     - Test connection interruptions
+     - Verify all chunk types display correctly
+     - Test with concurrent missions (if supported)
+  
+  4. Polish streaming UI
+     - Smooth scrolling during streaming
+     - Clear visual indicators for thinking vs tool vs result
+     - Proper handling of partial chunks
+
+Deliverables:
+  - Streaming mission execution works end-to-end
+  - Real-time updates display correctly
+  - All chunk types handled properly
+  - Error handling robust
+
+Verification:
+  - Deploy to Vercel
+  - Execute a streaming mission
+  - Verify thinking steps appear
+  - Verify tool executions appear
+  - Verify final report appears
+  - Test error scenarios
+
+Environment Variables Needed:
+  - NEXT_PUBLIC_API_URL=<your-render-backend-url>
+
+Files to Modify:
+  - frontend/app/agent/page.tsx (use streaming)
+  - frontend/lib/queries.ts (useStreamingMission already exists)
+  - frontend/components/agent/MessageList.tsx (verify streaming display)
+
+Backend Requirements:
+  - /execute/stream endpoint working
+  - NDJSON format correct
+  - All chunk types implemented
+  - Proper error handling in stream
+
+================================================================================
+PHASE 7: VERCEL SERVERLESS FUNCTION INTEGRATION (OPTIONAL)
+================================================================================
+Status: [ ] Not Started
+
+Objective: Move backend API to Vercel serverless functions instead of Render
+
+Tasks:
+  1. Evaluate serverless function approach
+     - Check if main.py can run in serverless environment
+     - Verify dependencies work (Playwright, ChromaDB, etc.)
+     - Check timeout limits (max 60s on free tier)
+     - Consider cold start implications
+  
+  2. Configure Vercel for Python functions
+     - Update vercel.json
+     - Ensure api/index.py is configured correctly
+     - Test function deployment
+  
+  3. Migrate endpoints incrementally
+     - Start with /health (simplest)
+     - Move to /stats
+     - Move to /reports
+     - Finally move /execute/stream (if timeout allows)
+  
+  4. Update frontend API URL
+     - Change to use relative /api path
+     - Update environment variables
+     - Test all endpoints
+
+Deliverables:
+  - Backend running on Vercel serverless functions
+  - All endpoints working
+  - Frontend connected correctly
+
+Verification:
+  - Deploy full stack to Vercel
+  - All endpoints work
+  - Streaming missions work (if timeout allows)
+  - Performance acceptable
+
+Environment Variables Needed:
+  - All backend environment variables (database, API keys, etc.)
+  - NEXT_PUBLIC_API_URL=/api (or remove for relative paths)
+
+Files to Modify:
+  - vercel.json (update functions config)
+  - api/index.py (verify configuration)
+  - Frontend API calls (update URLs)
+
+Backend Requirements:
+  - All backend code must work in serverless environment
+  - Dependencies compatible
+  - Timeout considerations
+
+================================================================================
+PHASE 8: PRODUCTION OPTIMIZATION & TESTING
+================================================================================
+Status: [ ] Not Started
+
+Objective: Final polish, error handling, and production readiness
+
+Tasks:
+  1. Error handling refinement
+     - Comprehensive error messages
+     - User-friendly error states
+     - Retry mechanisms where appropriate
+     - Error logging
+  
+  2. Performance optimization
+     - Code splitting
+     - Image optimization
+     - Lazy loading
+     - Caching strategies
+  
+  3. Security hardening
+     - Environment variable security
+     - API key protection
+     - CORS configuration review
+     - Input validation
+  
+  4. Testing
+     - Test all user flows
+     - Test error scenarios
+     - Load testing (if applicable)
+     - Cross-browser testing
+  
+  5. Documentation
+     - Update README with deployment steps
+     - Document environment variables
+     - Document known limitations
+     - Create troubleshooting guide
+
+Deliverables:
+  - Production-ready deployment
+  - Comprehensive error handling
+  - Optimized performance
+  - Complete documentation
+
+Verification:
+  - Full end-to-end testing
+  - Error scenarios tested
+  - Performance acceptable
+  - Documentation complete
+
+================================================================================
+NOTES & CONSIDERATIONS
+================================================================================
+
+Vercel Deployment Tips:
+  - Use environment variables for all configuration
+  - Check Vercel function logs for debugging
+  - Verify build output directory
+  - Check function timeout limits
+  - Monitor cold start times
+
+Common Issues to Watch For:
+  - CORS errors (backend must allow Vercel domain)
+  - Environment variable access (NEXT_PUBLIC_ prefix for client-side)
+  - API URL resolution in production vs development
+  - Streaming response handling
+  - Serverless function timeouts
+  - Dependency size limits
+
+Testing Strategy:
+  - Test each phase independently before moving to next
+  - Keep previous phase working while adding new features
+  - Test in production environment (Vercel) not just locally
+  - Test error scenarios at each phase
+
+Rollback Plan:
+  - Each phase should be independently deployable
+  - Keep previous working version tagged in git
+  - Use feature flags to toggle features
+  - Keep mock API available for fallback
+
+================================================================================
