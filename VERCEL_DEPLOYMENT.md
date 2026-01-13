@@ -48,8 +48,9 @@ Complete step-by-step guide to deploy Market Intelligence Agent Phase 0 to Verce
    - Install Command: `npm install` (or leave default)
 
    **Environment Variables:**
-   - None needed for Phase 0 (frontend-only)
-   - You can add these later when connecting the backend
+   - `NEXT_PUBLIC_USE_MOCK_API=true` (for Phase 2 - enables mock API mode)
+   - `NEXT_PUBLIC_API_URL` (for Phase 3+ - your backend URL)
+   - You can add these in Project Settings → Environment Variables after deployment
 
 ### Step 4: Deploy
 
@@ -86,14 +87,18 @@ Once deployment is complete:
 3. Add your custom domain (e.g., `mia.yourdomain.com`)
 4. Follow DNS configuration instructions
 
-### Environment Variables (Future)
+### Environment Variables
 
-When you add backend integration:
+**For Phase 2 (Current):**
 1. Go to **Project Settings** → **Environment Variables**
-2. Add variables like:
-   - `NEXT_PUBLIC_API_URL`
-   - `API_KEY`
-   - etc.
+2. Add:
+   - `NEXT_PUBLIC_USE_MOCK_API` = `true` (enables mock API mode)
+
+**For Phase 3+ (Backend Integration):**
+1. Update environment variables:
+   - `NEXT_PUBLIC_USE_MOCK_API` = `false` (or remove it)
+   - `NEXT_PUBLIC_API_URL` = `https://your-backend-url.com`
+2. Add any other backend-related variables as needed
 
 ## Troubleshooting
 
